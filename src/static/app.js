@@ -15,19 +15,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
-        const activityCard = document.createElement("div");
-        activityCard.className = "activity-card";
+          const activityCard = document.createElement("div");
+          activityCard.className = "activity-card";
 
-        const spotsLeft = details.max_participants - details.participants.length;
+          const spotsLeft = details.max_participants - details.participants.length;
 
-        activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-        `;
+          // Build participants HTML
+          let participantsHtml = '<div class="participants"><strong>Participants:</strong>';
+          if (details.participants && details.participants.length > 0) {
+            participantsHtml += '<ul class="participants-list">';
+            participantsHtml += details.participants
+              .map((p) => {
+                const label = (p.split("@")[0] || p).trim();
+                const initial = label.charAt(0).toUpperCase() || "?";
+                return `<li class="participant-item"><span class="avatar">${initial}</span>${p}</li>`;
+              })
+              .join("");
+            participantsHtml += '</ul>';
+          } else {
+            participantsHtml += '<p class="no-participants">No participants yet</p>';
+          }
+          participantsHtml += '</div>';
 
-        activitiesList.appendChild(activityCard);
+          activityCard.innerHTML = `
+            <h4>${name}</h4>
+            <p>${details.description}</p>
+            <p><strong>Schedule:</strong> ${details.schedule}</p>
+            <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+            ${participantsHtml}
+          `;
+
+          activitiesList.appendChild(activityCard);
 
         // Add option to select dropdown
         const option = document.createElement("option");
